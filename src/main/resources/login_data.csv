@@ -1,0 +1,6 @@
+username,password,expectedResult
+user2@gmail.com,123456789,success
+invaliduser,invalidpass,Thông tin đăng nhập không chính xác.
+user2@gmail.com,invalidpass,Thông tin đăng nhập không chính xác.
+admin@gmail.com,123456789,admin
+user3@gmail.com,123456789,banned
