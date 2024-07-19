@@ -1,4 +1,5 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -124,4 +125,11 @@ public class TestLogin {
         assertEquals("http://localhost:8080/demo_war/login.jsp", driver.getCurrentUrl());
     }
 
+//    @AfterEach
+//    public void tearDown() {
+//        // Close the browser
+//        if (driver != null) {
+//            driver.quit();
+//        }
+//    }
 }
