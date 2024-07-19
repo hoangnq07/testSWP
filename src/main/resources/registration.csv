@@ -1,0 +1,4 @@
+email,password,phone,expectedResult
+user1@gmail.com,password123,0987654321,Registration failed
+testuser2@example.com,password456,1234567890,Registration failed
+joe.example.test@gmail.com,P@ssw0rd1!,0987654321,Registration successful
