@@ -21,27 +21,23 @@ public class RegistrationPage {
 
     // Page actions
     public void enterEmail(String email) {
-        WebElement emailElement = driver.findElement(emailField);
-        emailElement.sendKeys(email);
+        driver.findElement(emailField).sendKeys(email);
     }
 
     public void enterPassword(String password) {
-        WebElement passwordElement = driver.findElement(passwordField);
-        passwordElement.sendKeys(password);
+        driver.findElement(passwordField).sendKeys(password);
     }
 
     public void enterPhone(String phone) {
-        WebElement phoneElement = driver.findElement(phoneField);
-        phoneElement.sendKeys(phone);
+        driver.findElement(phoneField).sendKeys(phone);
     }
 
     public void clickSubmitButton() {
-        WebElement submitElement = driver.findElement(submitButton);
-        submitElement.click();
+        driver.findElement(submitButton).click();
     }
 
     public String getStatusMessage() {
         WebElement statusElement = driver.findElement(statusMessage);
-        return statusElement.getText();
+        return statusElement != null ? statusElement.getText() : "";
     }
 }

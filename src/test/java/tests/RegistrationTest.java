@@ -11,17 +11,18 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.TimeoutException;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RegistrationTest {
@@ -31,7 +32,9 @@ public class RegistrationTest {
     @BeforeEach
     public void setUp() {
         WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-popup-blocking");
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.get("http://localhost:9999/Project/registration.jsp");
         registrationPage = new RegistrationPage(driver);
@@ -52,21 +55,30 @@ public class RegistrationTest {
         registrationPage.enterPhone(phone);
         registrationPage.clickSubmitButton();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
 
-        if (expectedResult.equals("Registration successful")) {
-            wait.until(ExpectedConditions.urlToBe("http://localhost:9999/Project/register"));
-            assertEquals("http://localhost:9999/Project/register", driver.getCurrentUrl(), "Expected URL not found. Registration might have failed.");
-        } else {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("status")));
-            String statusMessage = registrationPage.getStatusMessage();
-            System.out.println("Status Message: " + statusMessage);
-            assertTrue(statusMessage.contains(expectedResult), "Expected registration failure message not found.");
+        try {
+            if (expectedResult.equals("Registration successful")) {
+                wait.until(ExpectedConditions.urlToBe("http://localhost:9999/Project/register"));
+                assertTrue(driver.getCurrentUrl().equals("http://localhost:9999/Project/register"),
+                        "Expected URL: http://localhost:9999/Project/register, Actual URL: " + driver.getCurrentUrl());
+            } else {
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("status")));
+                String statusMessage = registrationPage.getStatusMessage();
+                assertTrue(statusMessage.contains(expectedResult),
+                        "Expected message to contain: " + expectedResult + ", but got: " + statusMessage);
+            }
+        } catch (TimeoutException e) {
+            if (expectedResult.equals("Registration successful")) {
+                assertTrue(false, "Expected URL: http://localhost:9999/Project/register, but URL did not change.");
+            } else {
+                assertTrue(false, "Expected message to contain: " + expectedResult + ", but element not found.");
+            }
         }
     }
 
     private static Stream<Arguments> readCsvData() throws IOException, CsvException {
-        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/registration.csv"))) {
+        try (CSVReader csvReader = new CSVReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("registration.csv")))) {
             List<String[]> records = csvReader.readAll();
             return records.stream().skip(1).map(data -> Arguments.of(data[0], data[1], data[2], data[3]));
         }
