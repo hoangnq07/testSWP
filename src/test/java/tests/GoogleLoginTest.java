@@ -55,8 +55,10 @@ public class GoogleLoginTest {
             System.out.println("Less than two buttons found with the specified CSS selector.");
         }
 
-        WebElement successElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-success-message")));
-        assertTrue(successElement.isDisplayed(), "Google login was not successful");
+        wait.until(ExpectedConditions.urlContains("/Project/home"));
+
+        assertTrue(driver.getTitle().toUpperCase().contains("HOME"),
+                "Title does not contain 'HOME'. Current URL: " + driver.getCurrentUrl());
     }
 
     @AfterEach
